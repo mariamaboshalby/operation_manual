@@ -1,27 +1,22 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
-
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
-
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+    <x-auth-page title="تأكيد كلمة المرور" subtitle="هذه منطقة آمنة. الرجاء تأكيد كلمة المرور للمتابعة.">
+        <div class="alert-message">
+            {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
+        <form method="POST" action="{{ route('password.confirm') }}">
+            @csrf
+
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <div class="input-field">
+                    <span class="input-icon">🔒</span>
+                    <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="ادخل كلمة المرور" />
+                </div>
+                <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-rose-400" />
+            </div>
+
+            <button type="submit" class="btn-submit">تأكيد</button>
+        </form>
+    </x-auth-page>
 </x-guest-layout>
