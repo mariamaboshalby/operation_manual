@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Barista Academy</title>
+    <title>Operation Manual</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -51,7 +51,7 @@
         }
 
         /* Hero */
-        .hero { position:relative; z-index:1; text-align:center; padding:5rem 1rem 3rem; }
+        .hero { position:relative; z-index:1; text-align:center; padding:10px; }
         .hero-eyebrow {
             display:inline-block;
             background:linear-gradient(135deg,var(--azure),var(--azure-light));
@@ -67,7 +67,7 @@
             animation:fadeDown .9s .1s ease both;
         }
         .hero-sub { font-size:.95rem; color:rgba(245,230,211,.55); margin-top:.8rem; animation:fadeDown 1s .2s ease both; }
-        .hero-divider { width:60px;height:3px; background:linear-gradient(90deg,var(--gold),var(--azure-light)); margin:1.8rem auto; border-radius:2px; animation:scaleIn 1s .3s ease both; }
+        .hero-divider { width:60px;height:3px; background:linear-gradient(90deg,var(--gold),var(--azure-light)); margin: auto; border-radius:2px; animation:scaleIn 1s .3s ease both; }
 
         /* Search */
         .search-wrap {
@@ -88,7 +88,7 @@
         .filter-bar {
             position:relative; z-index:1;
             display:flex; flex-wrap:wrap; justify-content:center; gap:.6rem;
-            margin-bottom:3rem; animation:fadeUp .8s .4s ease both;
+            margin-bottom:1rem; animation:fadeUp .8s .4s ease both;
         }
         .filter-btn {
             background:rgba(255,255,255,.05); border:1px solid rgba(240,192,64,.2);
@@ -198,7 +198,7 @@
 
 <!-- Navbar -->
 <nav class="navbar-custom">
-    <span class="brand-logo"><i class="fa-solid fa-mug-hot me-2"></i>Barista Academy</span>
+    <span class="brand-logo"><i class="fa-solid fa-mug-hot me-2"></i>Operation Manual</span>
     <div class="nav-actions">
         <span class="user-badge"><i class="fa-solid fa-circle-user me-1"></i>{{ Auth::user()->name }}</span>
         @if(Auth::user()->role === 'admin')
@@ -214,7 +214,7 @@
 <!-- Hero -->
 <div class="hero">
     <div class="hero-eyebrow">اختر وجهتك</div>
-    <h1 class="hero-title">Barista Academy</h1>
+    <h1 class="hero-title">Operation Manual</h1>
     <p class="hero-sub">اختر الشركة أو المطعم لتبدأ رحلة التعلم</p>
     <div class="hero-divider"></div>
 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $tutorial->title }} — Barista Academy</title>
+    <title>{{ $tutorial->title }} — Operation Manual</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -164,7 +164,7 @@
 <body>
 
 <nav class="navbar-custom">
-    <span class="brand-logo">☕ Barista Academy</span>
+    <span class="brand-logo">☕ Operation Manual</span>
     <div class="nav-links">
         <a href="{{ route('tutorials') }}"><i class="fas fa-arrow-right"></i> الكورسات</a>
         @if(auth()->user()->isAdmin())

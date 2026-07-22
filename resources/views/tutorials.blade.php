@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Barista Academy</title>
+    <title>Operation Manual</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -59,46 +59,6 @@
             color: var(--gold-light);
         }
 
-        /* ── Hero ── */
-        .hero {
-            position: relative; z-index: 1;
-            text-align: center;
-            padding: 6rem 1rem 4rem;
-        }
-        .hero-eyebrow {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--azure), var(--azure-light));
-            color: #fff;
-            font-size: .75rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            padding: .4rem 1.4rem;
-            border-radius: 50px;
-            margin-bottom: 1.5rem;
-            animation: fadeDown .8s ease both;
-        }
-        .hero-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.8rem, 7vw, 5.5rem);
-            font-weight: 900;
-            line-height: 1.1;
-            background: linear-gradient(135deg, var(--cream) 30%, var(--gold) 60%, var(--azure-light) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: fadeDown .9s .1s ease both;
-        }
-        .hero-sub {
-            font-size: 1.1rem;
-            color: rgba(245,230,211,.65);
-            margin-top: 1rem;
-            animation: fadeDown 1s .2s ease both;
-        }
-        .hero-divider {
-            width: 80px; height: 3px;
-            background: linear-gradient(90deg, var(--gold), var(--azure-light));
-            margin: 2rem auto;
-            border-radius: 2px;
-            animation: scaleIn 1s .3s ease both;
-        }
 
         /* ── Filter tabs ── */
         .filter-bar {
@@ -128,7 +88,7 @@
         }
 
         /* ── Cards grid ── */
-        .cards-section { position: relative; z-index: 1; padding: 0 1rem 6rem; }
+        .cards-section { position: relative; z-index: 1; padding: 10px; }
 
         .tutorial-card {
             background: linear-gradient(145deg, rgba(44,21,3,.9), rgba(26,10,0,.95));
@@ -311,7 +271,7 @@
 
 <!-- Navbar -->
 <nav class="navbar-custom d-flex align-items-center justify-content-between">
-    <span class="brand-logo">☕ Barista Academy</span>
+    <span class="brand-logo">☕ Operation Manual</span>
     <div class="d-flex align-items-center gap-3">
         <span class="user-badge">
             <i class="fas fa-user-circle me-1"></i>
@@ -333,7 +293,7 @@
 
 <!-- Company header -->
 @if(isset($company))
-<div style="position:relative;z-index:1;text-align:center;padding:3rem 1rem 1rem;">
+<div style="position:relative;z-index:1;text-align:center;padding:10px;">
     <a href="{{ route('dashboard') }}" style="display:inline-flex;align-items:center;gap:.5rem;color:rgba(245,230,211,.5);font-size:.82rem;text-decoration:none;margin-bottom:1.5rem;transition:color .2s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='rgba(245,230,211,.5)'">
         <i class="fas fa-arrow-right"></i> رجوع للشركات
     </a>
@@ -352,30 +312,6 @@
     </div>
 </div>
 @endif
-
-        <!-- Hero -->
-        <div class="hero">
-            <div class="hero-eyebrow">
-                @if(isset($company))
-                    <i class="fas fa-{{ $company->type === 'restaurant' ? 'utensils' : 'building' }} me-1"></i>
-                    {{ $company->type === 'restaurant' ? 'مطعم' : 'شركة' }}
-                @else
-                    كل التيوتوريالز
-                @endif
-            </div>
-            <h1 class="hero-title">
-                @if(isset($company)) {{ $company->name }}
-                @else Barista Academy
-                @endif
-            </h1>
-            <p class="hero-sub">
-                @if(isset($company)) استعرض جميع التيوتوريالز الخاصة بـ {{ $company->name }}
-                @else استعرض جميع التيوتوريالز المتاحة
-                @endif
-            </p>
-            <div class="hero-divider"></div>
-        </div>
-
 <!-- Filter -->
 <div class="filter-bar">
     <button class="filter-btn active" data-filter="all">الكل</button>

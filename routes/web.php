@@ -7,9 +7,11 @@ use App\Models\Category;
 use App\Models\Tutorial;
 use Illuminate\Support\Facades\Route;
 
+ 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
+
 
 Route::get('/dashboard', function () {
     $companies = \App\Models\Company::with(['tutorials' => function ($query) {

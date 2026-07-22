@@ -205,7 +205,7 @@
         <div class="login-card">
             <div class="login-panel">
                 <div class="login-head">
-                    <div class="brand-badge">Barista Academy</div>
+                    <div class="brand-badge">Operation Manual</div>
                     <h1>{{ $title }}</h1>
                     @isset($subtitle)
                         <p>{{ $subtitle }}</p>
