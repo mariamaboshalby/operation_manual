@@ -96,7 +96,7 @@
             @error('company_id')<span style="color:#ef4444;font-size:.78rem;">{{ $message }}</span>@enderror
         </div>
 
-        <div style="display:flex;gap:.6rem;">
+        <div class="form-actions">
             <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> إضافة</button>
             <a href="{{ route('admin.tutorials.page') }}" class="btn btn-ghost">إلغاء</a>
         </div>

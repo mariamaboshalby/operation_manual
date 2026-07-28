@@ -46,7 +46,7 @@
         <div class="form-group">
             <label class="form-label">اختيار الشركة</label>
             <select id="companySelect" class="form-control">
-                <option value="">-- اختر الشركة --</option>
+                <option value="">كل الشركات</option>
                 @foreach($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->name }}</option>
                 @endforeach
@@ -55,20 +55,49 @@
 
         <div class="form-group">
             <label class="form-label">التوتوريالات المربوطة</label>
-            <select class="form-control" name="tutorials[]" id="tutorialSelect" multiple size="8">
-                @foreach($tutorials as $tutorial)
-                    <option value="{{ $tutorial->id }}"
-                        data-company-id="{{ $tutorial->companies->pluck('id')->implode(',') }}"
-                        @selected(in_array($tutorial->id, old('tutorials', $user->tutorials->pluck('id')->toArray())))>
+            <div class="check-list" id="tutorialList">
+                @forelse($tutorials as $tutorial)
+                    <label class="check-item" data-company-id="{{ $tutorial->companies->pluck('id')->implode(',') }}">
+                        <input type="checkbox" name="tutorials[]" value="{{ $tutorial->id }}"
+                            @checked(in_array($tutorial->id, old('tutorials', $user->tutorials->pluck('id')->toArray())))>
                         {{ $tutorial->title }}
-                    </option>
-                @endforeach
-            </select>
-            <p style="font-size:.82rem;color:#64748b;margin-top:.4rem;">اختر شركة أولًا حتى تظهر التوتوريالات المرتبطة بها.</p>
+                    </label>
+                @empty
+                    <div class="check-list-empty"><i class="fa-solid fa-book-open"></i> لا توجد توتوريالات بعد</div>
+                @endforelse
+                <div class="check-list-empty" id="noTutorialsMsg" hidden><i class="fa-solid fa-filter-circle-xmark"></i> لا توجد توتوريالات مرتبطة بهذه الشركة</div>
+            </div>
+            <p class="form-hint">اختر شركة لفلترة التوتوريالات، واختياراتك المخفية تظل محفوظة.</p>
         </div>
 
-        <button class="btn btn-primary" type="submit">حفظ التغييرات</button>
-        <a href="{{ route('admin.users.page') }}" class="btn btn-ghost">عودة</a>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
+            <a href="{{ route('admin.users.page') }}" class="btn btn-ghost"><i class="fa-solid fa-arrow-right"></i> عودة</a>
+        </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const companySelect = document.getElementById('companySelect');
+        const items = document.querySelectorAll('#tutorialList .check-item');
+        const noMsg = document.getElementById('noTutorialsMsg');
+
+        if (!companySelect) return;
+
+        companySelect.addEventListener('change', function () {
+            const companyId = this.value;
+            let visible = 0;
+
+            items.forEach(function (item) {
+                const companyIds = (item.getAttribute('data-company-id') || '').split(',').filter(Boolean);
+                const isMatch = !companyId || companyIds.includes(companyId);
+                item.hidden = !isMatch;
+                if (isMatch) visible++;
+            });
+
+            if (noMsg) noMsg.hidden = visible > 0;
+        });
+    });
+</script>
 @endsection

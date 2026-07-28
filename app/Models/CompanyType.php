@@ -12,6 +12,6 @@ class CompanyType extends Model
 
     public function companies()
     {
-        return $this->hasMany(Company::class, 'type', 'slug');
+        return $this->hasMany(Company::class);
     }
 }

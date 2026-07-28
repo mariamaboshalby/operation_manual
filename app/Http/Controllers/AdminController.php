@@ -97,6 +97,10 @@ class AdminController extends Controller
 
     public function destroyCategory(Category $category)
     {
+        if ($category->tutorials()->exists()) {
+            return back()->with('error', 'لا يمكن حذف هذا الكاتيجوري لأن هناك تيوتوريالات تستخدمه');
+        }
+
         $category->delete();
         return back()->with('success', 'تم حذف الكاتيجوري');
     }
@@ -170,7 +174,7 @@ class AdminController extends Controller
     public function companiesPage()
     {
         return view('admin.companies', [
-            'companies'     => Company::with('tutorials')->withCount('tutorials')->latest()->get(),
+            'companies'     => Company::with(['tutorials', 'companyType'])->withCount('tutorials')->latest()->get(),
             'tutorials'     => Tutorial::orderBy('title')->get(),
             'companyTypes' => CompanyType::orderBy('name')->get(),
         ]);
@@ -180,10 +184,10 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:200',
-            'type' => 'required|exists:company_types,slug',
+            'company_type_id' => 'required|exists:company_types,id',
             'logo' => 'nullable|image|max:2048',
         ]);
-        $company = Company::create($request->only('name', 'type'));
+        $company = Company::create($request->only('name', 'company_type_id'));
         if ($request->hasFile('logo')) {
             $company->addMediaFromRequest('logo')->toMediaCollection('logo');
         }
@@ -194,10 +198,10 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:200',
-            'type' => 'required|exists:company_types,slug',
+            'company_type_id' => 'required|exists:company_types,id',
             'logo' => 'nullable|image|max:2048',
         ]);
-        $company->update($request->only('name', 'type'));
+        $company->update($request->only('name', 'company_type_id'));
         if ($request->hasFile('logo')) {
             $company->addMediaFromRequest('logo')->toMediaCollection('logo');
         }

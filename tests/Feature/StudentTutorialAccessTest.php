@@ -13,7 +13,7 @@ it('shows only tutorials assigned to a student for the selected company', functi
 
     $company = Company::create([
         'name' => 'Company One',
-        'type' => 'company',
+        'company_type_id' => \App\Models\CompanyType::where('slug', 'company')->value('id'),
     ]);
 
     $accessibleTutorial = Tutorial::create([

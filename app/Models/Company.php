@@ -11,7 +11,7 @@ class Company extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $fillable = ['name', 'type'];
+    protected $fillable = ['name', 'company_type_id'];
 
     public function registerMediaCollections(): void
     {
@@ -26,6 +26,16 @@ class Company extends Model implements HasMedia
     public function getLogoUrlAttribute(): ?string
     {
         return $this->getFirstMediaUrl('logo', 'thumb') ?: null;
+    }
+
+    public function companyType()
+    {
+        return $this->belongsTo(CompanyType::class);
+    }
+
+    public function getTypeAttribute(): string
+    {
+        return $this->companyType?->slug ?? 'company';
     }
 
     public function tutorials()

@@ -9,12 +9,20 @@ use Illuminate\Support\Facades\Route;
 
  
 Route::get('/', function () {
-    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
-});
+    return view('welcome', [
+        'stats' => [
+            'companies' => \App\Models\Company::query()->count(),
+            'tutorials' => Tutorial::query()->count(),
+            'lessons'   => \App\Models\Lesson::query()->count(),
+            'students'  => \App\Models\User::query()->where('role', 'student')->count(),
+        ],
+        'categories' => Category::query()->withCount('tutorials')->orderBy('name')->get(),
+    ]);
+})->name('welcome');
 
 
 Route::get('/dashboard', function () {
-    $companies = \App\Models\Company::with(['tutorials' => function ($query) {
+    $companies = \App\Models\Company::with(['companyType', 'tutorials' => function ($query) {
         $query->with('category');
     }])->orderBy('name')->get();
 
@@ -35,6 +43,13 @@ Route::get('/tutorials', function () {
         });
     }
 
+    // Students only see tutorials assigned to them
+    if (auth()->user()->isStudent()) {
+        $tutorialsQuery->whereHas('users', function ($query) {
+            $query->where('users.id', auth()->id());
+        });
+    }
+
     $tutorials = $tutorialsQuery->get();
 
     return view('tutorials', compact('categories', 'tutorials', 'company'));
@@ -50,6 +65,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/tutorials',                     [AdminController::class, 'tutorialsPage'])->name('tutorials.page');
     Route::get('/tutorials/create',              [AdminController::class, 'tutorialsCreate'])->name('tutorials.create');
     Route::get('/categories',                    [AdminController::class, 'categoriesPage'])->name('categories.page');
+    Route::post('/categories',                   [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::put('/categories/{category}',         [AdminController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{category}',      [AdminController::class, 'destroyCategory'])->name('categories.destroy');
     Route::get('/users',                         [AdminController::class, 'usersPage'])->name('users.page');
     Route::get('/students',                      [AdminController::class, 'studentsPage'])->name('students.page');
     Route::get('/students/create',               [AdminController::class, 'studentsCreate'])->name('students.create');

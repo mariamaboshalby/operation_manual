@@ -53,7 +53,7 @@
             </td>
             <td style="font-weight:600;">{{ $c->name }}</td>
             <td>
-                @php $companyType = $companyTypes->firstWhere('slug', $c->type); @endphp
+                @php $companyType = $c->companyType; @endphp
                 @if($companyType && $companyType->slug === 'restaurant')
                     <span class="badge" style="background:#fef3c7;color:#92400e;">
                         <i class="fa-solid fa-utensils" style="margin-left:.3rem;"></i> {{ $companyType->name }}
@@ -107,9 +107,9 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">النوع <span style="color:#ef4444">*</span></label>
-                    <select class="form-control" name="type" required>
+                    <select class="form-control" name="company_type_id" required>
                         @foreach($companyTypes as $type)
-                            <option value="{{ $type->slug }}">{{ $type->name }}</option>
+                            <option value="{{ $type->id }}">{{ $type->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -152,9 +152,9 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">النوع</label>
-                    <select class="form-control" name="type" required>
+                    <select class="form-control" name="company_type_id" required>
                         @foreach($companyTypes as $type)
-                            <option value="{{ $type->slug }}" @selected($c->type === $type->slug)>{{ $type->name }}</option>
+                            <option value="{{ $type->id }}" @selected($c->company_type_id === $type->id)>{{ $type->name }}</option>
                         @endforeach
                     </select>
                 </div>

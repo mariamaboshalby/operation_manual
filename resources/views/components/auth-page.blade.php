@@ -97,17 +97,31 @@
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(244, 203, 91, 0.16);
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+            transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .input-field:hover {
+            border-color: rgba(244, 203, 91, 0.35);
+        }
+        .input-field:focus-within {
+            border-color: var(--gold);
+            background: rgba(244, 203, 91, 0.06);
+            box-shadow: 0 0 0 4px rgba(244, 203, 91, 0.12);
+        }
+        .input-field:focus-within .input-icon {
+            background: rgba(244, 203, 91, 0.35);
         }
         .input-icon {
             display: inline-flex;
             width: 38px;
             height: 38px;
+            flex-shrink: 0;
             align-items: center;
             justify-content: center;
             border-radius: 14px;
             background: rgba(244, 203, 91, 0.18);
             color: #fff;
             font-size: 1rem;
+            transition: background .2s ease;
         }
         .form-group input {
             width: 100%;
@@ -118,8 +132,23 @@
             font-size: 1rem;
             outline: none;
         }
+        .form-group input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-ring-offset-shadow: 0 0 #0000;
+        }
+        .form-group input:-webkit-autofill,
+        .form-group input:-webkit-autofill:hover,
+        .form-group input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--text-main);
+            -webkit-box-shadow: 0 0 0 1000px #16100a inset;
+            caret-color: var(--text-main);
+            transition: background-color 9999s ease-in-out 0s;
+        }
         .form-group input::placeholder {
-            color: #64748b;
+            color: #8b93a3;
         }
         .checkbox-row {
             display: flex;
