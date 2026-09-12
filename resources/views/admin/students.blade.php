@@ -35,7 +35,14 @@
             </td>
             <td style="font-size:.82rem;color:#64748b;">{{ $student->created_at->format('Y-m-d') }}</td>
             <td>
-                <a href="{{ route('admin.users.edit', $student) }}" class="btn btn-ghost btn-sm">تعديل</a>
+                <a href="{{ route('admin.students.edit', $student) }}" class="btn btn-ghost btn-sm">تعديل</a>
+                <form class="inline" method="POST" action="{{ route('admin.students.destroy', $student) }}"
+                      onsubmit="return confirm('حذف الطالب؟')">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-danger btn-sm" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
             </td>
         </tr>
         @empty

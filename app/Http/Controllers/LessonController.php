@@ -54,18 +54,36 @@ class LessonController extends Controller
         return back()->with('success', 'تم حذف الدرس');
     }
 
+    /**
+     * Bulk-reorder lessons for a tutorial.
+     *
+     * Expects JSON body: { "order": [lessonId, lessonId, ...] }
+     * or form-encoded:  order[]=1&order[]=2&...
+     */
+    public function reorder(Request $request, Tutorial $tutorial)
+    {
+        $request->validate([
+            'order'   => 'required|array',
+            'order.*' => 'integer|exists:lessons,id',
+        ]);
+
+        foreach ($request->order as $position => $lessonId) {
+            $tutorial->lessons()
+                ->where('id', $lessonId)
+                ->update(['order' => $position + 1]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     // Public course page
     public function show(Tutorial $tutorial)
     {
-        $user = auth()->user();
-
-        if ($user?->isStudent()) {
-            $allowed = $user->tutorials()->where('tutorials.id', $tutorial->id)->exists();
-
-            if (! $allowed) {
-                abort(403);
-            }
-        }
+        // Enforces TutorialPolicy::view():
+        //   admin  → always allowed (before() bypass)
+        //   user   → always allowed
+        //   student → only if tutorial is assigned to them (403 otherwise)
+        \Illuminate\Support\Facades\Gate::authorize('view', $tutorial);
 
         $tutorial->load(['category', 'lessons']);
         return view('course', compact('tutorial'));

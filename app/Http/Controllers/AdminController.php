@@ -305,7 +305,72 @@ class AdminController extends Controller
 
         $user->tutorials()->sync($data['tutorials'] ?? []);
 
-        return redirect()->route('admin.users.page')->with('success', 'تم تعديل المستخدم');
+        // Redirect back to the correct section based on the (possibly updated) role
+        $newRole = $data['role'] ?? 'user';
+        $redirect = $newRole === 'student'
+            ? redirect()->route('admin.students.page')
+            : redirect()->route('admin.users.page');
+
+        return $redirect->with('success', 'تم تعديل المستخدم');
+    }
+
+    // ── Students (dedicated CRUD) ────────────────────────────────
+
+    /**
+     * Show the edit form for a student.
+     * Enforces that the user being edited actually has the student role.
+     */
+    public function editStudent(User $student)
+    {
+        abort_unless($student->isStudent(), 404);
+
+        return view('admin.students-edit', [
+            'student'   => $student->load('tutorials'),
+            'tutorials' => Tutorial::orderBy('title')->get(),
+            'companies' => Company::orderBy('name')->get(),
+        ]);
+    }
+
+    /**
+     * Update a student's details and tutorial assignments.
+     */
+    public function updateStudent(Request $request, User $student)
+    {
+        abort_unless($student->isStudent(), 404);
+
+        $data = $request->validate([
+            'name'      => 'required|string|max:150',
+            'email'     => ['required', 'email', Rule::unique('users', 'email')->ignore($student->id)],
+            'password'  => ['nullable', 'string', 'min:8', 'confirmed'],
+            'tutorials' => 'nullable|array',
+            'tutorials.*' => 'exists:tutorials,id',
+        ]);
+
+        $updateData = [
+            'name'  => $data['name'],
+            'email' => $data['email'],
+            // role stays 'student' — admins must use the role-change endpoint to promote
+        ];
+
+        if (! empty($data['password'])) {
+            $updateData['password'] = bcrypt($data['password']);
+        }
+
+        $student->update($updateData);
+        $student->tutorials()->sync($data['tutorials'] ?? []);
+
+        return redirect()->route('admin.students.page')->with('success', 'تم تعديل الطالب');
+    }
+
+    /**
+     * Delete a student account.
+     */
+    public function destroyStudent(User $student)
+    {
+        abort_unless($student->isStudent(), 404);
+
+        $student->delete();
+        return redirect()->route('admin.students.page')->with('success', 'تم حذف الطالب');
     }
 
     // ── Company Types ────────────────────────────────────────────
