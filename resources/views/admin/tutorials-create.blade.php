@@ -96,6 +96,24 @@
             @error('company_id')<span style="color:#ef4444;font-size:.78rem;">{{ $message }}</span>@enderror
         </div>
 
+        <div class="form-group">
+            <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.75rem 1rem;border:1px solid #dbe1ec;border-radius:10px;background:#f8fafc;">
+                <input type="hidden" name="certificate_enabled" value="0">
+                <input type="checkbox" name="certificate_enabled" value="1"
+                       @checked(old('certificate_enabled'))
+                       style="width:18px;height:18px;accent-color:#2563eb;cursor:pointer;flex-shrink:0;">
+                <span>
+                    <span style="font-weight:600;font-size:.9rem;color:#1e293b;">
+                        <i class="fa-solid fa-certificate" style="color:#f59e0b;margin-left:.3rem;"></i>
+                        تفعيل الشهادة
+                    </span>
+                    <span style="display:block;font-size:.78rem;color:#64748b;margin-top:.1rem;">
+                        يتم منح شهادة إتمام للمستخدم عند إكمال جميع دروس التيوتوريال
+                    </span>
+                </span>
+            </label>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> إضافة</button>
             <a href="{{ route('admin.tutorials.page') }}" class="btn btn-ghost">إلغاء</a>

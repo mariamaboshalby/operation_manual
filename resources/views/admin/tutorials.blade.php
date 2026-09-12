@@ -181,6 +181,19 @@
                     <input class="form-control" name="steps" type="number" min="0" value="{{ $t->steps }}">
                 </div>
             </div>
+            <div class="form-group">
+                <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.65rem .85rem;border:1px solid #dbe1ec;border-radius:10px;background:#f8fafc;">
+                    <input type="hidden" name="certificate_enabled" value="0">
+                    <input type="checkbox" name="certificate_enabled" value="1"
+                           @checked($t->certificate_enabled)
+                           style="width:16px;height:16px;accent-color:#2563eb;cursor:pointer;flex-shrink:0;">
+                    <span style="font-size:.88rem;color:#1e293b;">
+                        <i class="fa-solid fa-certificate" style="color:#f59e0b;margin-left:.3rem;"></i>
+                        <strong>تفعيل الشهادة</strong>
+                        <span style="color:#64748b;font-weight:400;"> — منح شهادة عند إكمال التيوتوريال</span>
+                    </span>
+                </label>
+            </div>
             <div style="display:flex;gap:.6rem;justify-content:flex-end;">
                 <button type="button" class="btn btn-ghost" onclick="closeModal('editModal-{{ $t->id }}')">إلغاء</button>
                 <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>

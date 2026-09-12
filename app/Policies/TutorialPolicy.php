@@ -21,10 +21,7 @@ class TutorialPolicy
 
     /**
      * Determine whether the user can view the tutorials list.
-     *
-     * - admin   → bypassed in before()
-     * - user    → always yes
-     * - student → always yes (list is pre-filtered in the query)
+     * List is pre-filtered per role in the query; policy just gates access.
      */
     public function viewAny(User $user): bool
     {
@@ -46,5 +43,20 @@ class TutorialPolicy
 
         // role = 'user'
         return true;
+    }
+
+    /**
+     * Determine whether the user can complete lessons within a tutorial.
+     *
+     * Same access rules as view():
+     *   - admin   → bypassed in before()
+     *   - user    → always yes (enrollment is checked separately for
+     *               write operations but any user can complete lessons
+     *               in tutorials they can view)
+     *   - student → only if the tutorial is assigned to them
+     */
+    public function complete(User $user, Tutorial $tutorial): bool
+    {
+        return $this->view($user, $tutorial);
     }
 }

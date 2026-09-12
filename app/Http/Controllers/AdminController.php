@@ -109,18 +109,23 @@ class AdminController extends Controller
     public function storeTutorial(Request $request)
     {
         $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title'       => 'required|string|max:200',
-            'description' => 'required|string',
-            'cover'       => 'nullable|image|max:2048',
-            'thumb_class' => 'nullable|string|max:50',
-            'level'       => 'required|in:beginner,intermediate,advanced',
-            'duration'    => 'nullable|string|max:50',
-            'steps'       => 'nullable|integer|min:0',
-            'company_id'  => 'required|exists:companies,id',
+            'category_id'          => 'required|exists:categories,id',
+            'title'                => 'required|string|max:200',
+            'description'          => 'required|string',
+            'cover'                => 'nullable|image|max:2048',
+            'thumb_class'          => 'nullable|string|max:50',
+            'level'                => 'required|in:beginner,intermediate,advanced',
+            'duration'             => 'nullable|string|max:50',
+            'steps'                => 'nullable|integer|min:0',
+            'company_id'           => 'required|exists:companies,id',
+            'certificate_enabled'  => 'nullable|boolean',
         ]);
 
-        $tutorial = Tutorial::create($request->except(['cover', 'company_id']));
+        $data = $request->except(['cover', 'company_id']);
+        // Checkbox sends '1' when checked, absent when unchecked
+        $data['certificate_enabled'] = $request->boolean('certificate_enabled');
+
+        $tutorial = Tutorial::create($data);
 
         if ($request->hasFile('cover')) {
             $tutorial->addMediaFromRequest('cover')->toMediaCollection('cover');
@@ -136,18 +141,22 @@ class AdminController extends Controller
     public function updateTutorial(Request $request, Tutorial $tutorial)
     {
         $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title'       => 'required|string|max:200',
-            'description' => 'required|string',
-            'cover'       => 'nullable|image|max:2048',
-            'thumb_class' => 'nullable|string|max:50',
-            'level'       => 'required|in:beginner,intermediate,advanced',
-            'duration'    => 'nullable|string|max:50',
-            'steps'       => 'nullable|integer|min:0',
-            'company_id'  => 'required|exists:companies,id',
+            'category_id'          => 'required|exists:categories,id',
+            'title'                => 'required|string|max:200',
+            'description'          => 'required|string',
+            'cover'                => 'nullable|image|max:2048',
+            'thumb_class'          => 'nullable|string|max:50',
+            'level'                => 'required|in:beginner,intermediate,advanced',
+            'duration'             => 'nullable|string|max:50',
+            'steps'                => 'nullable|integer|min:0',
+            'company_id'           => 'required|exists:companies,id',
+            'certificate_enabled'  => 'nullable|boolean',
         ]);
 
-        $tutorial->update($request->except(['cover', 'company_id']));
+        $data = $request->except(['cover', 'company_id']);
+        $data['certificate_enabled'] = $request->boolean('certificate_enabled');
+
+        $tutorial->update($data);
 
         if ($request->hasFile('cover')) {
             $tutorial->addMediaFromRequest('cover')->toMediaCollection('cover');

@@ -294,6 +294,13 @@
         <span class="sidebar-badge">{{ \App\Models\CompanyType::count() }}</span>
     </a>
 
+    <div class="sidebar-section">الشهادات</div>
+
+    <a href="{{ route('admin.certificates.page') }}" class="sidebar-link {{ request()->routeIs('admin.certificates.page') ? 'active' : '' }}">
+        <span class="link-left"><i class="fa-solid fa-certificate"></i> الشهادات</span>
+        <span class="sidebar-badge">{{ \App\Models\Certificate::count() }}</span>
+    </a>
+
     <div class="sidebar-user">
         <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
         <div class="user-info">

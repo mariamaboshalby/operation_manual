@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminCertificateController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\LessonCompletionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Category;
@@ -21,33 +24,33 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
-// ── Authenticated (no email-verification gate — MustVerifyEmail is disabled) ─
+// Public certificate verification — no login required
+Route::get('/certificates/verify/{certificateNumber}', [CertificateController::class, 'verify'])
+    ->name('certificates.verify');
+
+// ── Authenticated ─────────────────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
 
-    // Dashboard — admins redirect to admin panel; students and users stay here
+    // Dashboard — admins → /admin, students → /tutorials, users → company dashboard
     Route::get('/dashboard', function () {
         $user = auth()->user();
 
-        // Admins have their own panel
         if ($user->isAdmin()) {
             return redirect()->route('admin.index');
         }
 
-        // Students go straight to their tutorial list
         if ($user->isStudent()) {
             return redirect()->route('tutorials');
         }
 
-        // Normal users see the company-browsing dashboard
-        $companies = \App\Models\Company::with(['companyType', 'tutorials' => function ($query) {
-            $query->with('category');
+        $companies = \App\Models\Company::with(['companyType', 'tutorials' => function ($q) {
+            $q->with('category');
         }])->orderBy('name')->get();
 
         return view('dashboard', ['companies' => $companies]);
     })->name('dashboard');
 
-    // Tutorials list — filtered by role via Policy (viewAny always true,
-    // but the query is scoped so students only see their assigned tutorials)
+    // Tutorials list
     Route::get('/tutorials', function () {
         Gate::authorize('viewAny', Tutorial::class);
 
@@ -58,15 +61,14 @@ Route::middleware('auth')->group(function () {
         $tutorialsQuery = Tutorial::with('category');
 
         if ($company) {
-            $tutorialsQuery->whereHas('companies', function ($query) use ($company) {
-                $query->where('companies.id', $company->id);
+            $tutorialsQuery->whereHas('companies', function ($q) use ($company) {
+                $q->where('companies.id', $company->id);
             });
         }
 
-        // Students can only see tutorials assigned to them
         if ($user->isStudent()) {
-            $tutorialsQuery->whereHas('users', function ($query) use ($user) {
-                $query->where('users.id', $user->id);
+            $tutorialsQuery->whereHas('users', function ($q) use ($user) {
+                $q->where('users.id', $user->id);
             });
         }
 
@@ -75,9 +77,16 @@ Route::middleware('auth')->group(function () {
         return view('tutorials', compact('categories', 'tutorials', 'company'));
     })->name('tutorials');
 
-    // Individual tutorial / course page — enforced by Policy at controller level
-    Route::get('/tutorials/{tutorial}', [LessonController::class, 'show'])
-        ->name('tutorials.show');
+    // Individual tutorial / course page
+    Route::get('/tutorials/{tutorial}', [LessonController::class, 'show'])->name('tutorials.show');
+
+    // Lesson completion
+    Route::post('/lessons/{lesson}/complete', [LessonCompletionController::class, 'store'])
+        ->name('lessons.complete');
+
+    // User certificates
+    Route::get('/certificates',              [CertificateController::class, 'index'])->name('certificates.index');
+    Route::get('/certificates/{certificate}',[CertificateController::class, 'show'])->name('certificates.show');
 
     // Profile management
     Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
@@ -107,11 +116,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/tutorials/{tutorial}',       [AdminController::class, 'destroyTutorial'])->name('tutorials.destroy');
 
     // Lessons (nested under tutorial)
-    Route::get('/tutorials/{tutorial}/lessons',                       [LessonController::class, 'index'])->name('lessons.index');
-    Route::post('/tutorials/{tutorial}/lessons',                      [LessonController::class, 'store'])->name('lessons.store');
-    Route::put('/tutorials/{tutorial}/lessons/{lesson}',              [LessonController::class, 'update'])->name('lessons.update');
-    Route::delete('/tutorials/{tutorial}/lessons/{lesson}',           [LessonController::class, 'destroy'])->name('lessons.destroy');
-    Route::post('/tutorials/{tutorial}/lessons/reorder',              [LessonController::class, 'reorder'])->name('lessons.reorder');
+    Route::get('/tutorials/{tutorial}/lessons',             [LessonController::class, 'index'])->name('lessons.index');
+    Route::post('/tutorials/{tutorial}/lessons',            [LessonController::class, 'store'])->name('lessons.store');
+    Route::put('/tutorials/{tutorial}/lessons/{lesson}',    [LessonController::class, 'update'])->name('lessons.update');
+    Route::delete('/tutorials/{tutorial}/lessons/{lesson}', [LessonController::class, 'destroy'])->name('lessons.destroy');
+    Route::post('/tutorials/{tutorial}/lessons/reorder',    [LessonController::class, 'reorder'])->name('lessons.reorder');
 
     // Categories
     Route::get('/categories',               [AdminController::class, 'categoriesPage'])->name('categories.page');
@@ -127,10 +136,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/companies/{company}',      [AdminController::class, 'destroyCompany'])->name('companies.destroy');
 
     // Company Types
-    Route::get('/company-types',                    [AdminController::class, 'companyTypesPage'])->name('company-types.page');
-    Route::post('/company-types',                   [AdminController::class, 'storeCompanyType'])->name('company-types.store');
-    Route::put('/company-types/{companyType}',      [AdminController::class, 'updateCompanyType'])->name('company-types.update');
-    Route::delete('/company-types/{companyType}',   [AdminController::class, 'destroyCompanyType'])->name('company-types.destroy');
+    Route::get('/company-types',                  [AdminController::class, 'companyTypesPage'])->name('company-types.page');
+    Route::post('/company-types',                 [AdminController::class, 'storeCompanyType'])->name('company-types.store');
+    Route::put('/company-types/{companyType}',    [AdminController::class, 'updateCompanyType'])->name('company-types.update');
+    Route::delete('/company-types/{companyType}', [AdminController::class, 'destroyCompanyType'])->name('company-types.destroy');
 
     // Users (role = user / admin)
     Route::get('/users',               [AdminController::class, 'usersPage'])->name('users.page');
@@ -140,13 +149,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}/role', [AdminController::class, 'updateUserRole'])->name('users.role');
     Route::delete('/users/{user}',     [AdminController::class, 'destroyUser'])->name('users.destroy');
 
-    // Students (dedicated flow — separate from users)
-    Route::get('/students',                  [AdminController::class, 'studentsPage'])->name('students.page');
-    Route::get('/students/create',           [AdminController::class, 'studentsCreate'])->name('students.create');
-    Route::post('/students',                 [AdminController::class, 'storeStudent'])->name('students.store');
-    Route::get('/students/{student}/edit',   [AdminController::class, 'editStudent'])->name('students.edit');
-    Route::put('/students/{student}',        [AdminController::class, 'updateStudent'])->name('students.update');
-    Route::delete('/students/{student}',     [AdminController::class, 'destroyStudent'])->name('students.destroy');
+    // Students (dedicated flow)
+    Route::get('/students',                [AdminController::class, 'studentsPage'])->name('students.page');
+    Route::get('/students/create',         [AdminController::class, 'studentsCreate'])->name('students.create');
+    Route::post('/students',               [AdminController::class, 'storeStudent'])->name('students.store');
+    Route::get('/students/{student}/edit', [AdminController::class, 'editStudent'])->name('students.edit');
+    Route::put('/students/{student}',      [AdminController::class, 'updateStudent'])->name('students.update');
+    Route::delete('/students/{student}',   [AdminController::class, 'destroyStudent'])->name('students.destroy');
+
+    // Certificates
+    Route::get('/certificates',                              [AdminCertificateController::class, 'index'])->name('certificates.page');
+    Route::get('/certificates/{certificate}',                [AdminCertificateController::class, 'show'])->name('certificates.show');
+    Route::patch('/certificates/{certificate}/revoke',       [AdminCertificateController::class, 'revoke'])->name('certificates.revoke');
+    Route::patch('/certificates/{certificate}/restore',      [AdminCertificateController::class, 'restore'])->name('certificates.restore');
 });
 
 require __DIR__.'/auth.php';

@@ -7,24 +7,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Tutorial;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'role',
         'password',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password'          => 'hashed',
+        ];
+    }
+
+    // ── Role helpers ─────────────────────────────────────────────
 
     public function isAdmin(): bool
     {
@@ -36,31 +46,33 @@ class User extends Authenticatable
         return $this->role === 'student';
     }
 
+    // ── Relationships ────────────────────────────────────────────
+
+    /**
+     * Tutorials the user is enrolled in / assigned to.
+     */
     public function tutorials(): BelongsToMany
     {
-        return $this->belongsToMany(Tutorial::class)->withTimestamps()->withPivot('enrolled_at');
+        return $this->belongsToMany(Tutorial::class)
+                    ->withTimestamps()
+                    ->withPivot('enrolled_at');
     }
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Lessons the user has completed (pivot: lesson_user).
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public function completedLessons(): BelongsToMany
+    {
+        return $this->belongsToMany(Lesson::class, 'lesson_user')
+                    ->withPivot('completed_at')
+                    ->withTimestamps();
+    }
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Certificates earned by this user.
      */
-    protected function casts(): array
+    public function certificates(): HasMany
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Certificate::class);
     }
 }

@@ -108,8 +108,9 @@
                 <textarea class="form-control" name="content" rows="4" placeholder="شرح الدرس..."></textarea>
             </div>
             <div class="form-group">
-                <label class="form-label"><i class="fa-brands fa-youtube" style="color:#ef4444;margin-left:.3rem;"></i> رابط الفيديو</label>
-                <input class="form-control" name="video_url" type="url" placeholder="https://youtube.com/...">
+                <label class="form-label"><i class="fa-brands fa-youtube" style="color:#ef4444;margin-left:.3rem;"></i> رابط يوتيوب</label>
+                <input class="form-control" name="video_url" type="url" placeholder="https://www.youtube.com/watch?v=...">
+                <p class="form-hint">فقط روابط YouTube — youtube.com أو youtu.be</p>
             </div>
             <div class="form-group">
                 <label class="form-label">المدة (دقائق)</label>
@@ -143,8 +144,9 @@
                 <textarea class="form-control" name="content" rows="4">{{ $lesson->content }}</textarea>
             </div>
             <div class="form-group">
-                <label class="form-label">رابط الفيديو</label>
-                <input class="form-control" name="video_url" type="url" value="{{ $lesson->video_url }}">
+                <label class="form-label">رابط يوتيوب</label>
+                <input class="form-control" name="video_url" type="url" value="{{ $lesson->video_url }}" placeholder="https://www.youtube.com/watch?v=...">
+                <p class="form-hint">فقط روابط YouTube. اتركه فارغًا لإزالة الفيديو.</p>
             </div>
             <div class="grid2">
                 <div class="form-group">
