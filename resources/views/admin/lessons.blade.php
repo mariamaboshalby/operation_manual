@@ -99,22 +99,36 @@
                     <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
                 </div>
             @endif
+            @if($errors->any())
+                <div class="alert alert-error" style="margin-bottom:.8rem;font-size:.82rem;">
+                    <ul style="margin:0;padding:0 1rem;list-style:disc;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="form-group">
                 <label class="form-label">عنوان الدرس <span style="color:#ef4444">*</span></label>
-                <input class="form-control" name="title" placeholder="مثال: مقدمة عن القهوة" required>
+                <input class="form-control" name="title" placeholder="مثال: مقدمة عن القهوة"
+                       value="{{ old('title') }}" required>
             </div>
             <div class="form-group">
                 <label class="form-label">المحتوى</label>
-                <textarea class="form-control" name="content" rows="4" placeholder="شرح الدرس..."></textarea>
+                <textarea class="form-control" name="content" rows="4"
+                          placeholder="شرح الدرس...">{{ old('content') }}</textarea>
             </div>
             <div class="form-group">
                 <label class="form-label"><i class="fa-brands fa-youtube" style="color:#ef4444;margin-left:.3rem;"></i> رابط يوتيوب</label>
-                <input class="form-control" name="video_url" type="url" placeholder="https://www.youtube.com/watch?v=...">
-                <p class="form-hint">فقط روابط YouTube — youtube.com أو youtu.be</p>
+                <input class="form-control" name="video_url" type="text"
+                       placeholder="https://www.youtube.com/watch?v=..."
+                       value="{{ old('video_url') }}">
+                <p class="form-hint">اختياري — youtube.com أو youtu.be فقط</p>
             </div>
             <div class="form-group">
                 <label class="form-label">المدة (دقائق)</label>
-                <input class="form-control" name="duration_minutes" type="number" min="0" placeholder="0">
+                <input class="form-control" name="duration_minutes" type="number"
+                       min="0" placeholder="0" value="{{ old('duration_minutes') }}">
             </div>
             <button type="submit" class="btn btn-primary" style="width:100%;">
                 <i class="fa-solid fa-floppy-disk"></i> إضافة الدرس
@@ -145,7 +159,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label">رابط يوتيوب</label>
-                <input class="form-control" name="video_url" type="url" value="{{ $lesson->video_url }}" placeholder="https://www.youtube.com/watch?v=...">
+                <input class="form-control" name="video_url" type="text" value="{{ $lesson->video_url }}" placeholder="https://www.youtube.com/watch?v=...">
                 <p class="form-hint">فقط روابط YouTube. اتركه فارغًا لإزالة الفيديو.</p>
             </div>
             <div class="grid2">

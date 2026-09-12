@@ -23,11 +23,16 @@ class LessonController extends Controller
 
     public function store(Request $request, Tutorial $tutorial)
     {
+        // Convert empty string to null so 'nullable' works correctly
+        $request->merge([
+            'video_url' => $request->input('video_url') ?: null,
+        ]);
+
         $data = $request->validate([
             'title'            => 'required|string|max:200',
             'content'          => 'nullable|string',
             'video_url'        => ['nullable', 'string', 'max:500', function ($attr, $value, $fail) {
-                if ($value && !isValidYoutubeUrl($value)) {
+                if ($value !== null && !isValidYoutubeUrl($value)) {
                     $fail('رابط الفيديو يجب أن يكون رابط YouTube صالح (youtube.com أو youtu.be).');
                 }
             }],
@@ -46,22 +51,22 @@ class LessonController extends Controller
 
     public function update(Request $request, Tutorial $tutorial, Lesson $lesson)
     {
+        // Convert empty string to null so 'nullable' works correctly
+        $request->merge([
+            'video_url' => $request->input('video_url') ?: null,
+        ]);
+
         $data = $request->validate([
             'title'            => 'required|string|max:200',
             'content'          => 'nullable|string',
             'video_url'        => ['nullable', 'string', 'max:500', function ($attr, $value, $fail) {
-                if ($value && !isValidYoutubeUrl($value)) {
+                if ($value !== null && !isValidYoutubeUrl($value)) {
                     $fail('رابط الفيديو يجب أن يكون رابط YouTube صالح (youtube.com أو youtu.be).');
                 }
             }],
             'duration_minutes' => 'nullable|integer|min:0',
             'order'            => 'nullable|integer|min:0',
         ]);
-
-        // Allow clearing the video_url by submitting an empty string
-        if (array_key_exists('video_url', $data) && $data['video_url'] === '') {
-            $data['video_url'] = null;
-        }
 
         $lesson->update($data);
         return back()->with('success', 'تم تعديل الدرس');
